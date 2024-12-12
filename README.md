@@ -3,7 +3,7 @@ Empty cells are marked with ‘-’ and cells with barriers are marked with ‘#
 
 Sample Input Puzzle Board: [[-,-,-,-,-],[-,-,#,-,-],[-,-,-,-,-],[#,-,#,#,-],[-#,-,-,-]] 
 
-The goal is to find the minimum path from the source cell to the desitination cell.. You can only move to empty cells and cannot move to 
+The goal is to find the minimum path from the source cell to the desitination cell. You can only move to empty cells and cannot move to 
 a cell with a barrier in it. If there is not possible path from source to destination return None.
 
 You can move only in the following directions. 
