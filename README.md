@@ -1,4 +1,4 @@
-Puzzle that takes in a 2-D puzzle of size MxN, that has N rows and M columns. Each cell in the puzzle is either empty or has a barrier. 
+Puzzle that takes in a 2-D puzzle of size MxN, that has N rows and M columns. It also takes in a tuple for a source and a tuple for destination. Each cell in the puzzle is either empty or has a barrier. 
 Empty cells are marked with ‘-’ and cells with barriers are marked with ‘#’. 
 
 Sample Input Puzzle Board: [[-,-,-,-,-],[-,-,#,-,-],[-,-,-,-,-],[#,-,#,#,-],[-#,-,-,-]] 
