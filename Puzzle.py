@@ -58,3 +58,6 @@ def solve_puzzle(Board, Source, Destination):
         visited.append(source_node)
 
     return None
+
+#if __name__ == '__main__':
+ #   print(solve_puzzle([["-","-","-","-","-"],["-","-","#","-","-"],["-","-","-","-","-"],["#","-","#","#","-"],["-","#","-","-","-"]], (0,4), (4,4)))
