@@ -20,6 +20,7 @@ board = [["-","-","-","-","-","-","-","-","-","-"],
 
 grid_colors = []
 
+# Control the workflow for the gui.
 def on_click(row, col):
     global grid_colors, current_stage, source, destination, board
     if current_stage == "select_source":
@@ -38,6 +39,7 @@ def on_click(row, col):
         grid_colors[row][col] = 'black' if grid_colors[row][col] == 'white' else 'white'
         canvas.itemconfig(grid_rects[row][col], fill=grid_colors[row][col])
         board[row][col] = "#" if board[row][col] == "-" else '-'
+        run_button.config(state=tk.NORMAL)
 
 def solve_puzzle():
     """Finds the shortest path in a puzzle sized MxN. Each cell in the puzzle is either open or has a barrier (denoted
@@ -47,6 +49,7 @@ def solve_puzzle():
     paths = []                              # Create a priority queue for storing the paths from Source to Destination
     visited = []
     directions = [(1, 0, "Down"), (0, 1, "Right"), (-1, 0, "Up"), (0, -1, "Left")]
+    destination_reached = False
 
     dest_row, dest_col = (destination)
     source_row, source_col = (source)
@@ -84,7 +87,7 @@ def solve_puzzle():
 
                 elif board[neighbor_row][neighbor_col] == "-":  # Otherwise, process node
                     destination_dist = abs(neighbor_row - dest_row) + abs(neighbor_col - dest_col)
-                    updated_path_string = current_path_string + ", " + string_direction  # Update the path taken to reach node
+                    updated_path_string = current_path_string + " " + string_direction  # Update the path taken to reach node
                     updated_path = current_path + [source_node]
 
                     if (neighbor_row, neighbor_col) == destination:     # If Destination found, return path
@@ -92,14 +95,19 @@ def solve_puzzle():
                         instructions_string.set(f"Shortest path from source to destination: {updated_path_string}")
                         reveal_path(updated_path)
                         paths.clear() 
+                        destination_reached = True
                         break
 
                     heapq.heappush(paths,
                                    (destination_dist, (neighbor_row, neighbor_col), updated_path_string, updated_path))
 
         visited.append(source_node)
+     
+    if destination_reached == False:
+        instructions_string.set("There's no valid path from source to destination.")
 
 def reveal_path(updated_path):
+    """Reaveals to optimal path on the board in yellow"""
     for step in updated_path:
         row, col = step
         if grid_colors[row][col] == 'white':
@@ -107,6 +115,7 @@ def reveal_path(updated_path):
             canvas.itemconfig(grid_rects[row][col], fill=grid_colors[row][col])
 
 def reset_board():
+    """Resets the board and all variables to initial state"""
     global current_stage, source, destination, board, grid_rects, grid_colors
     current_stage = "select_source"
     source = ("", "")
@@ -121,6 +130,8 @@ def reset_board():
         ["-","-","-","-","-","-","-","-","-","-"],
         ["-","-","-","-","-","-","-","-","-","-"],
         ["-","-","-","-","-","-","-","-","-","-"]]
+    run_button.config(state=tk.DISABLED)
+    instructions_string.set('Select a source by clicking one of the cells. This is the starting point for the traversal.')
     
     for row in range(len(grid_rects)):
         for col in range(len(grid_rects[row])):
@@ -129,7 +140,7 @@ def reset_board():
                 canvas.itemconfig(grid_rects[row][col], fill=grid_colors[row][col])
 
 
-
+#Create the initial state of the game board
 def create_grid(canvas, rows, cols, cell_size):
     grid_rects = []
     for row in range(rows):
@@ -165,7 +176,7 @@ grid_rects = create_grid(canvas, rows, cols, cell_size)
 
 #input fields
 input_frame = ttk.Frame(master = root)
-run_button = ttk.Button(master = input_frame, text = "Find Path", padding = 10, command=solve_puzzle)
+run_button = ttk.Button(master = input_frame, text = "Find Path", padding = 10, command=solve_puzzle, state="disabled")
 reset_button = ttk.Button(master = input_frame, text = "Reset Board", padding = 10, command=reset_board)
 run_button.pack()
 reset_button.pack()
