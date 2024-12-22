@@ -18,8 +18,10 @@ board = [["-","-","-","-","-","-","-","-","-","-"],
         ["-","-","-","-","-","-","-","-","-","-"],
         ["-","-","-","-","-","-","-","-","-","-"]]
 
+grid_colors = []
+
 def on_click(row, col):
-    global current_stage, source, destination, board
+    global grid_colors, current_stage, source, destination, board
     if current_stage == "select_source":
         grid_colors[row][col] = 'green' if grid_colors[row][col] == 'white' else 'white'
         canvas.itemconfig(grid_rects[row][col], fill=grid_colors[row][col])
@@ -44,7 +46,7 @@ def solve_puzzle():
 
     paths = []                              # Create a priority queue for storing the paths from Source to Destination
     visited = []
-    directions = [(1, 0, "D"), (0, 1, "R"), (-1, 0, "U"), (0, -1, "L")]
+    directions = [(1, 0, "Down"), (0, 1, "Right"), (-1, 0, "Up"), (0, -1, "Left")]
 
     dest_row, dest_col = (destination)
     source_row, source_col = (source)
@@ -82,13 +84,15 @@ def solve_puzzle():
 
                 elif board[neighbor_row][neighbor_col] == "-":  # Otherwise, process node
                     destination_dist = abs(neighbor_row - dest_row) + abs(neighbor_col - dest_col)
-                    updated_path_string = current_path_string + string_direction  # Update the path taken to reach node
+                    updated_path_string = current_path_string + ", " + string_direction  # Update the path taken to reach node
                     updated_path = current_path + [source_node]
 
                     if (neighbor_row, neighbor_col) == destination:     # If Destination found, return path
                         updated_path = current_path + [source_node] + [destination]
-                        instructions_string.set(f"Path: {updated_path}, {updated_path_string}")
+                        instructions_string.set(f"Shortest path from source to destination: {updated_path_string}")
                         reveal_path(updated_path)
+                        paths.clear() 
+                        break
 
                     heapq.heappush(paths,
                                    (destination_dist, (neighbor_row, neighbor_col), updated_path_string, updated_path))
@@ -101,7 +105,30 @@ def reveal_path(updated_path):
         if grid_colors[row][col] == 'white':
             grid_colors[row][col] = 'yellow'
             canvas.itemconfig(grid_rects[row][col], fill=grid_colors[row][col])
-        
+
+def reset_board():
+    global current_stage, source, destination, board, grid_rects, grid_colors
+    current_stage = "select_source"
+    source = ("", "")
+    destination = ("", "")
+    board = [["-","-","-","-","-","-","-","-","-","-"],
+        ["-","-","-","-","-","-","-","-","-","-"],
+        ["-","-","-","-","-","-","-","-","-","-"],
+        ["-","-","-","-","-","-","-","-","-","-"],
+        ["-","-","-","-","-","-","-","-","-","-"],
+        ["-","-","-","-","-","-","-","-","-","-"],
+        ["-","-","-","-","-","-","-","-","-","-"],
+        ["-","-","-","-","-","-","-","-","-","-"],
+        ["-","-","-","-","-","-","-","-","-","-"],
+        ["-","-","-","-","-","-","-","-","-","-"]]
+    
+    for row in range(len(grid_rects)):
+        for col in range(len(grid_rects[row])):
+            if grid_colors[row][col] != 'white':
+                grid_colors[row][col] = 'white'
+                canvas.itemconfig(grid_rects[row][col], fill=grid_colors[row][col])
+
+
 
 def create_grid(canvas, rows, cols, cell_size):
     grid_rects = []
@@ -136,10 +163,12 @@ cell_size = 50
 grid_colors = [['white' for _ in range(cols)] for _ in range(rows)]
 grid_rects = create_grid(canvas, rows, cols, cell_size)
 
-#input field
+#input fields
 input_frame = ttk.Frame(master = root)
-button = ttk.Button(master = input_frame, text = "Find Path", padding = 10, command=solve_puzzle)
-button.pack()
+run_button = ttk.Button(master = input_frame, text = "Find Path", padding = 10, command=solve_puzzle)
+reset_button = ttk.Button(master = input_frame, text = "Reset Board", padding = 10, command=reset_board)
+run_button.pack()
+reset_button.pack()
 input_frame.pack()
 
 #instructions
